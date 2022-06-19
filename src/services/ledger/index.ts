@@ -87,6 +87,8 @@ export const LedgerService = (): ILedgerService => {
         account_path: liabilitiesMainAccount,
         hash,
       })
+      /* eslint @typescript-eslint/ban-ts-comment: "off" */
+      // @ts-ignore-next-line no-implicit-any error
       return results.map((tx) => translateToLedgerTx(tx))
     } catch (err) {
       return new UnknownLedgerError(err)
@@ -99,6 +101,7 @@ export const LedgerService = (): ILedgerService => {
     const liabilitiesWalletId = toLiabilitiesWalletId(walletId)
     try {
       const { results } = await MainBook.ledger({ account: liabilitiesWalletId })
+      // @ts-ignore-next-line no-implicit-any error
       return results.map((tx) => translateToLedgerTx(tx))
     } catch (err) {
       return new UnknownLedgerError(err)
@@ -111,6 +114,7 @@ export const LedgerService = (): ILedgerService => {
     const liabilitiesWalletIds = walletIds.map(toLiabilitiesWalletId)
     try {
       const { results } = await MainBook.ledger({ account: liabilitiesWalletIds })
+      // @ts-ignore-next-line no-implicit-any error
       return results.map((tx) => translateToLedgerTx(tx))
     } catch (err) {
       return new UnknownLedgerError(err)
@@ -119,6 +123,7 @@ export const LedgerService = (): ILedgerService => {
 
   const getTransactionsByWalletIdAndContactUsername = async (
     walletId: WalletId,
+    // @ts-ignore-next-line no-implicit-any error
     contactUsername,
   ): Promise<LedgerTransaction<WalletCurrency>[] | LedgerError> => {
     const liabilitiesWalletId = toLiabilitiesWalletId(walletId)
@@ -127,6 +132,7 @@ export const LedgerService = (): ILedgerService => {
         account: liabilitiesWalletId,
         username: contactUsername,
       })
+      // @ts-ignore-next-line no-implicit-any error
       return results.map((tx) => translateToLedgerTx(tx))
     } catch (err) {
       return new UnknownLedgerError(err)
@@ -143,6 +149,7 @@ export const LedgerService = (): ILedgerService => {
         type: LedgerTransactionType.Payment,
         pending: true,
       })
+      // @ts-ignore-next-line no-implicit-any error
       return results.map((tx) => translateToLedgerTx(tx))
     } catch (err) {
       return new UnknownLedgerError(err)
@@ -374,6 +381,7 @@ export const LedgerService = (): ILedgerService => {
   })
 }
 
+// @ts-ignore-next-line no-implicit-any error
 export const translateToLedgerTx = (tx): LedgerTransaction<WalletCurrency> => ({
   id: tx.id,
   walletId: toWalletId(tx.accounts),
@@ -408,8 +416,10 @@ export const translateToLedgerTx = (tx): LedgerTransaction<WalletCurrency> => ({
   displayCurrency: tx?.displayCurrency,
 })
 
+// @ts-ignore-next-line no-implicit-any error
 export const translateToLedgerJournal = (savedEntry): LedgerJournal => ({
   journalId: savedEntry._id.toString(),
   voided: savedEntry.voided,
+  // @ts-ignore-next-line no-implicit-any error
   transactionIds: savedEntry._transactions.map((id) => id.toString()),
 })

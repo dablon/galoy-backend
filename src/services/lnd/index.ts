@@ -601,6 +601,8 @@ const KnownLndErrorDetails = {
   PaymentInTransition: "payment is in transition",
 } as const
 
+/* eslint @typescript-eslint/ban-ts-comment: "off" */
+// @ts-ignore-next-line no-implicit-any error
 const translateLnPaymentLookup = (p): LnPaymentLookup => ({
   createdAt: new Date(p.created_at),
   status: p.is_confirmed ? PaymentStatus.Settled : PaymentStatus.Pending,
