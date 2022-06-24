@@ -50,6 +50,7 @@ type LnInvoiceLookup = {
   readonly createdAt: Date
   readonly confirmedAt: Date | undefined
   readonly isSettled: boolean
+  readonly isHeld: boolean
   readonly roundedDownReceived: Satoshis
   readonly milliSatsReceived: MilliSatoshis
   readonly secretPreImage: SecretPreImage
@@ -109,6 +110,7 @@ type LnInvoice = {
 }
 
 type RegisterInvoiceArgs = {
+  paymentHash: PaymentHash
   description: string
   descriptionHash?: string
   sats: Satoshis
@@ -116,6 +118,7 @@ type RegisterInvoiceArgs = {
 }
 
 type NewRegisterInvoiceArgs = {
+  paymentHash: PaymentHash
   description: string
   descriptionHash?: string
   btcPaymentAmount: BtcPaymentAmount
@@ -215,6 +218,14 @@ interface ILightningService {
   ): Promise<ListLnPaymentsResult | LightningServiceError>
 
   listFailedPayments: ListLnPayments
+
+  settleInvoice({
+    pubkey,
+    secret,
+  }: {
+    pubkey: Pubkey
+    secret: SecretPreImage
+  }): Promise<true | LightningServiceError>
 
   cancelInvoice({
     pubkey,
