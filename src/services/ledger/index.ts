@@ -67,8 +67,8 @@ export const LedgerService = (): ILedgerService => {
     try {
       const _id = toObjectId<LedgerTransactionId>(id)
       const { results } = await MainBook.ledger({
-        account_path: liabilitiesMainAccount,
         _id,
+        account: liabilitiesMainAccount,
       })
       if (results.length === 1) {
         return translateToLedgerTx(results[0])
@@ -84,8 +84,8 @@ export const LedgerService = (): ILedgerService => {
   ): Promise<LedgerTransaction<WalletCurrency>[] | LedgerServiceError> => {
     try {
       const { results } = await MainBook.ledger({
-        account_path: liabilitiesMainAccount,
         hash,
+        account: liabilitiesMainAccount,
       })
       return results.map((tx) => translateToLedgerTx(tx))
     } catch (err) {
@@ -150,29 +150,15 @@ export const LedgerService = (): ILedgerService => {
   }
 
   async function* listAllPaymentHashes(): AsyncGenerator<PaymentHash | LedgerError> {
-    const aggregationParams = [
-      {
-        $match: {
-          type: LedgerTransactionType.Payment,
-        },
-      },
-      {
-        $group: {
+    try {
+      const agg = Transaction.aggregate()
+        .match({ type: LedgerTransactionType.Payment })
+        .group({
           _id: "$hash",
           createdAt: { $first: "$timestamp" },
-        },
-      },
-      {
-        $sort: {
-          createdAt: -1,
-        },
-      },
-    ]
-
-    try {
-      const agg = Transaction.aggregate(aggregationParams)
+        })
+        .sort({ createdAt: -1 })
         .cursor({ batchSize: 100 })
-        .exec()
       for await (const { _id } of agg) {
         yield _id
       }
@@ -186,7 +172,7 @@ export const LedgerService = (): ILedgerService => {
   ): Promise<number | LedgerError> => {
     const liabilitiesWalletId = toLiabilitiesWalletId(walletId)
     return Transaction.countDocuments({
-      accounts: liabilitiesWalletId,
+      account: liabilitiesWalletId,
       type: LedgerTransactionType.Payment,
       pending: true,
     })
@@ -205,7 +191,7 @@ export const LedgerService = (): ILedgerService => {
 
         if (walletId !== dealerUsdWalletId) {
           recordExceptionInCurrentSpan({
-            error: new BalanceLessThanZeroError(balance),
+            error: new BalanceLessThanZeroError(balance.toString()),
             attributes: {
               "getWalletBalance.error.invalidBalance": `${balance}`,
             },
@@ -232,7 +218,7 @@ export const LedgerService = (): ILedgerService => {
 
         if (walletDescriptor.id !== dealerUsdWalletId) {
           recordExceptionInCurrentSpan({
-            error: new BalanceLessThanZeroError(balance),
+            error: new BalanceLessThanZeroError(balance.toString()),
             attributes: {
               "getWalletBalance.error.invalidBalance": `${balance}`,
             },
@@ -277,7 +263,7 @@ export const LedgerService = (): ILedgerService => {
 
     try {
       const result = await Transaction.countDocuments({
-        accounts: liabilitiesWalletId,
+        account: liabilitiesWalletId,
         type: LedgerTransactionType.OnchainReceipt,
         hash: txHash,
       })
@@ -307,7 +293,7 @@ export const LedgerService = (): ILedgerService => {
     const bankOwnerWalletId = await caching.getBankOwnerWalletId()
     const bankOwnerPath = toLiabilitiesWalletId(bankOwnerWalletId)
     const entry = await Transaction.findOne({
-      account_path: liabilitiesMainAccount,
+      account: liabilitiesMainAccount,
       accounts: { $ne: bankOwnerPath },
       hash,
     })
@@ -335,9 +321,7 @@ export const LedgerService = (): ILedgerService => {
           },
         },
         { $group: { _id: "$accounts" } },
-      ])
-        .cursor({ batchSize: 100 })
-        .exec()
+      ]).cursor({ batchSize: 100 })
     } catch (error) {
       return new UnknownLedgerError(error)
     }
