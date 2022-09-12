@@ -61,12 +61,15 @@ watch-unit:
 watch-compile:
 	$(BIN_DIR)/tsc --watch  --noEmit --skipLibCheck
 
+oathkeeper:
+	oathkeeper serve -c dev/ory/oathkeeper.yml --sqa-opt-out
+
 e2e:
+	# need oathkeeper running in another terminal
 	yarn build && \
 	yarn test:e2e
 
 e2e-in-ci:
-	docker compose -f docker-compose.yml up integration-deps -d && \
 	make create-tmp-env-ci && \
 	TMP_ENV_CI=tmp.env.ci docker compose -f docker-compose.yml up e2e-tests
 
@@ -84,7 +87,6 @@ reset-integration: reset-deps integration
 reset-e2e: reset-deps e2e
 
 integration-in-ci:
-	docker compose -f docker-compose.yml up integration-deps -d && \
 	make create-tmp-env-ci && \
 	TMP_ENV_CI=tmp.env.ci docker compose -f docker-compose.yml up integration-tests
 

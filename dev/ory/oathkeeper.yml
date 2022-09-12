@@ -1,0 +1,72 @@
+log:
+  level: debug
+  format: json
+
+authenticators:
+  bearer_token:
+    enabled: true
+    config:
+      check_session_url: http://e2e-tests:4002/auth/validatejwt # will need 2 bearer token? can filter?
+
+  anonymous:
+    enabled: true
+    config:
+      subject: anon
+
+  unauthorized:
+    # Set 'enabled' to 'true' if the authenticator should be enabled and 'false' to disable the authenticator. Defaults to 'false'.
+    enabled: true
+
+authorizers:
+  allow:
+    enabled: true
+
+mutators:
+  noop:
+    enabled: true
+
+  id_token:
+    enabled: true
+    config: 
+      jwks_url: file:///home/ory/jwks.json
+      issuer_url: "galoy.io"
+
+errors:
+  fallback:
+    - json
+  handlers:
+    json:
+      enabled: true
+      config:
+        verbose: true
+
+# for kratos?
+# errors:
+#   handlers:
+#     redirect:
+#       enabled: true
+#       config:
+#         to: /login
+
+serve:
+  proxy:
+    cors:
+      enabled: true
+      # allowed_origins:
+      #   - http://localhost:5050
+      allowed_methods:
+        - GET
+        - POST
+      allowed_headers:
+        - Cookie
+        - Content-Type
+      exposed_headers:
+        - Content-Type
+        - Link
+      allow_credentials: true
+      max_age: 3600
+
+access_rules:
+  repositories:
+    - file:///home/ory/oathkeeper_rules.yaml
+  matching_strategy: regexp
