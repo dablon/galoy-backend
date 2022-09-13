@@ -129,6 +129,9 @@ type YamlSchema = {
     serverURL: string
     corsAllowedOrigins: string[]
   }
+  oathkeeperConfig: {
+    urlJkws: string
+  }
   captcha: {
     mandatory: boolean
   }

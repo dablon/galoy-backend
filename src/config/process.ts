@@ -101,18 +101,3 @@ export const LND_HEALTH_REFRESH_TIME_MS = parseInt(
   process.env.LND_HEALTH_REFRESH_TIME_MS || "20000",
   10,
 )
-
-export const getJwksArgs = () => {
-  const URL_JKWS = process.env.URL_JKWS
-
-  if (!URL_JKWS) {
-    throw new ConfigError("URL_JKWS env missing")
-  }
-
-  return {
-    cache: true,
-    rateLimit: true,
-    jwksRequestsPerMinute: 5,
-    jwksUri: URL_JKWS,
-  }
-}
