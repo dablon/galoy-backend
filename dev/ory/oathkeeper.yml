@@ -6,7 +6,7 @@ authenticators:
   bearer_token:
     enabled: true
     config:
-      check_session_url: http://e2e-tests:4002/auth/validatejwt # will need 2 bearer token? can filter?
+      check_session_url: http://e2e-tests:4002/auth/validatejwt
 
   anonymous:
     enabled: true
@@ -14,7 +14,6 @@ authenticators:
       subject: anon
 
   unauthorized:
-    # Set 'enabled' to 'true' if the authenticator should be enabled and 'false' to disable the authenticator. Defaults to 'false'.
     enabled: true
 
 authorizers:
@@ -39,14 +38,6 @@ errors:
       enabled: true
       config:
         verbose: true
-
-# for kratos?
-# errors:
-#   handlers:
-#     redirect:
-#       enabled: true
-#       config:
-#         to: /login
 
 serve:
   proxy:

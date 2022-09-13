@@ -58,17 +58,9 @@ authRouter.post("/browser", async (req, res) => {
 
 const jwtAlgorithms: jwt.Algorithm[] = ["HS256"]
 
-// use for oathkeeper
+// used by oathkeeper to validate JWT
+// should not be public
 authRouter.post("/validatejwt", async (req, res) => {
-  // TODO: should only respond to oathkeeper
-
-  // const ipString = isDev ? req?.ip : req?.headers["x-real-ip"]
-  // const ip = parseIps(ipString)
-
-  // if (ip === undefined) {
-  //   throw new Error("IP is not defined")
-  // }
-
   const headers = req?.headers
   let tokenPayload: string | jwt.JwtPayload | null = null
   const authz = headers.authorization || headers.Authorization
